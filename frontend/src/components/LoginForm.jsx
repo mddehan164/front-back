@@ -1,29 +1,45 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from "axios";
 
-const LoginForm = () => {
-  const [mobile, setMobile] = useState('');
-  const [password, setPassword] = useState('');
+const LoginForm = ({setUser}) => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Logging in with mobile: ${mobile}`);
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", form);
+      alert(res.data.message);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setUser(res.data.user);
+
+      navigate("/");
+    } catch (err) {
+      alert("❌ Login failed");
+      console.log(err)
+    }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow rounded">
       <h2 className="text-2xl font-bold mb-4">Login</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" placeholder="Mobile" required
+        <input type="email" placeholder="E-mail" required
           className="w-full border p-2 rounded"
-          value={mobile} onChange={(e) => setMobile(e.target.value)} />
+          onChange={handleChange} name='email'/>
         
         <input type="password" placeholder="Password" required
           className="w-full border p-2 rounded"
-          value={password} onChange={(e) => setPassword(e.target.value)} />
+          onChange={handleChange} name='password'/>
         
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
-        <p>Haven't any account? <span><Link to="/register">Register</Link></span></p>
+        <p>Haven't any account? <span><Link to="/register" className='text-blue-500 hover:underline'>Register</Link></span></p>
       </form>
     </div>
   );

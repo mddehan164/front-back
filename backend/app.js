@@ -1,19 +1,15 @@
-const express = require("express")
-const cors = require("cors")
-const mysql = require("mysql")
-const app = express()
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+
+const app = express();
+const authRoutes = require("./routes/auth");
 
 app.use(cors());
+app.use(express.json());
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database:"practise_auth",
-})
+app.use("/api/auth", authRoutes);
 
-app.get("/", (req, res)=>{
-    res.send("hi, i am listening")
-})
-
-app.listen(3000, ()=> console.log("listening.."))
+app.listen(process.env.PORT || 5000, () => {
+  console.log("✅ Server is running");
+});

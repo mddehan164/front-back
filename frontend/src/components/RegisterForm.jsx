@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from "axios";
+import { Link } from 'react-router-dom';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -13,13 +15,21 @@ const RegisterForm = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
       return;
     }
-    alert(`Registered: ${formData.name}`);
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/register", formData);
+      alert(res.data.message);
+    } catch (err) {
+      console.error(err);
+      alert("❌ " + (err.response?.data?.error?.sqlMessage || "Registration failed"));
+    }
   };
 
   return (
@@ -47,6 +57,7 @@ const RegisterForm = () => {
           value={formData.confirmPassword} onChange={handleChange} />
 
         <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Register</button>
+        <small>already have an account? <Link to="/login" className='text-blue-500 hover:underline'>Login</Link></small>
       </form>
     </div>
   );
