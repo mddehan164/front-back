@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ConfirmModal from './ConfirmModal';
 
 const Navbar = ({ user, setUser }) => {
   const [click, setClick] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false); // ✅ moved inside component
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -12,8 +14,17 @@ const Navbar = ({ user, setUser }) => {
   }, [setUser]);
 
   const handleLogout = () => {
+    setShowConfirm(true); // show confirmation modal
+  };
+
+  const confirmDelete = () => {
     localStorage.clear();
     setUser(null);
+    setShowConfirm(false);
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
   };
 
   return (
@@ -21,7 +32,7 @@ const Navbar = ({ user, setUser }) => {
       <h1 className="text-xl font-bold">My App</h1>
       <div className="flex items-center justify-end gap-10 font-semibold">
         <Link to="/" className="hover:underline">Home</Link>
-        
+
         {!user && (
           <Link to="/login" className="hover:underline">Login</Link>
         )}
@@ -50,6 +61,13 @@ const Navbar = ({ user, setUser }) => {
             </div>
           </div>
         )}
+
+        <ConfirmModal
+          show={showConfirm}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+          message="Are you sure you want to logout?"
+        />
       </div>
     </nav>
   );
