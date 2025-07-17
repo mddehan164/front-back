@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ConfirmModal from './ConfirmModal';
+import api from "../../api/axiosInstance"
 
 const Navbar = ({ user, setUser }) => {
   const [click, setClick] = useState(false);
@@ -13,12 +14,18 @@ const Navbar = ({ user, setUser }) => {
     }
   }, [setUser]);
 
-  const handleLogout = () => {
-    setShowConfirm(true); // show confirmation modal
-  };
+  const handleLogout = async () => {
+    setShowConfirm(true)
+};
 
-  const confirmDelete = () => {
-    localStorage.clear();
+  const confirmDelete = async() => {
+    try {
+    await api.post("/logout"); // চাইলে token blacklist করো
+  } catch (err) {
+    console.error("Logout error", err);
+  }
+  localStorage.clear();
+  window.location.href = "/";
     setUser(null);
     setShowConfirm(false);
   };

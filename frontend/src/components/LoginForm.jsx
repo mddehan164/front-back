@@ -31,24 +31,29 @@ const LoginForm = ({setUser}) => {
   setMsg("Logging in...");
 
   try {
-    await api.get("/sanctum/csrf-cookie");
-    const res = await api.post('/api/auth/login', form);
+    // JWT হলে CSRF দরকার হয় না, তাহলে নিচের লাইন বাদ দাও
+    // await api.get("/sanctum/csrf-cookie");
+
+    const res = await api.post('/login', form);
+    console.log(res)
 
     if (res.status === 200 || res.status === 201) {
-     const msg = res.data.message;
-     setMsg(msg || "Login Successful")
+      const user = res.data.data?.user;
+      const accessToken = res.data.data?.access_token ;
+      const refreshToken = res.data.data?.refresh_token;
 
-      // save user/token if returned
-      if (res.data.data.user) setUser(res.data.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.data.user));
-      localStorage.setItem("token", JSON.stringify(res.data.access_token));
-     setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      setMsg(res.data.message || "Login Successful");
+
+      if (user) setUser(user);
+      if (accessToken) localStorage.setItem("access_token", accessToken);
+      if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+      if (user) localStorage.setItem("user", JSON.stringify(user));
+
+      setTimeout(() => navigate("/"), 2000);
     }
   } catch (error) {
     console.error(error);
-    alert('Login failed');
+    setMsg("❌ Login failed. Try again.");
   }
 };
 

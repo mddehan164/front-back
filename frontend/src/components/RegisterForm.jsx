@@ -36,11 +36,9 @@ const RegisterForm = () => {
     }
 
     try {
-      // First get CSRF cookie (only needed once per session)
-      await api.get("/sanctum/csrf-cookie");
 
       // Then call your register API
-      const res = await api.post("/api/auth/register", formData);
+      const res = await api.post("/register", formData);
 
       if (res.status === 201 || res.status === 200) {
         setMsg(res.data.message);

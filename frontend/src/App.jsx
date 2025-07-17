@@ -18,17 +18,6 @@ const App = () => {
   //   }
   // }, []);
 
- useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      await api.get('/sanctum/csrf-cookie'); // just in case
-    } catch (err) {
-      console.log("User not logged in.");
-    }
-  };
-
-  fetchUser();
-}, []);
 
   return (
     <Router>
