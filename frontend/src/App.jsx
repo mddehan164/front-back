@@ -6,16 +6,30 @@ import RegisterForm from './components/RegisterForm';
 import HomePage from './components/HomePage';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import api from "../api/axiosInstance"
 
 const App = () => {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+  // useEffect(() => {
+  //   const savedUser = localStorage.getItem("user");
+  //   if (savedUser) {
+  //     setUser(JSON.parse(savedUser));
+  //   }
+  // }, []);
+
+ useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie'); // just in case
+    } catch (err) {
+      console.log("User not logged in.");
     }
-  }, []);
+  };
+
+  fetchUser();
+}, []);
+
   return (
     <Router>
       <Navbar user={user} setUser={setUser}/>
